@@ -1,0 +1,35 @@
+<script type="text/javascript" src="/static/js/jquery.js"></script>
+<script src="/static/js/progress-bar/src/jquery.velocity.min.js"></script>
+<script src="/static/js/progress-bar/number-pb.js"></script>
+<script src="/static/js/progress-bar/progress-app.js"></script>
+<script type="text/javascript" src="/static/js/preloader.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.js"></script>
+<script type="text/javascript" src="/static/js/app.js"></script>
+<script type="text/javascript" src="/static/js/load.js"></script>
+<script type="text/javascript" src="/static/js/main.js"></script>
+<script type="text/javascript" src="/static/js/layer/layer/layer.js"></script>
+<script type="text/javascript" src="/static/bizjs/viewmodel.js"></script>
+<script type="text/javascript" src="/static/bizjs/common.js"></script>
+<script type="text/javascript" src="/static/bizjs/mycharts.js"></script>
+
+
+<script src="//cdn.bootcss.com/echarts/2.2.7/echarts.js"></script>
+<script>
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: '//cdn.bootcss.com/echarts/2.2.7/'
+        }
+    });
+
+    //转换内容
+    $(function(){
+        var id = $("#breadcrumbNumber").html();
+        var json = localStorage[id];
+        if(json){
+            var obj = JSON.parse(json);
+            $("#breadcrumbNumber").html(obj.Alias);
+        }
+
+    });
+</script>

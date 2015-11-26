@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>系统信息</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Le styles -->
+
+
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/loader-style.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+
+    <link rel="stylesheet" type="text/css" href="/static/js/progress-bar/number-pb.css">
+
+
+    <style type="text/css">
+        canvas#canvas4 {
+            position: relative;
+            top: 20px;
+        }
+    </style>
+    <link rel="shortcut icon" href="/ico/minus.png">
+</head>
+
+<body>
+<!-- Preloader -->
+<div id="preloader">
+    <div id="status">&nbsp;</div>
+</div>
+
+
+<!-- TOP NAVBAR -->
+{{template "./nav.html" .}}
+<!-- /END OF TOP NAVBAR -->
+
+<!-- SIDE MENU home页面不需要显示 -->
+{{template "./select.html" .}}
+<!-- END OF SIDE MENU -->
+
+<!--  PAPER WRAP -->
+<div class="wrap-fluid">
+    <div class="container-fluid paper-wrap bevel tlbr">
+
+        <!-- CONTENT -->
+        <!--TITLE -->
+        <div class="row">
+            <div id="paper-top">
+                <div class="col-lg-3">
+                    <h2 class="tittle-content-header">
+                        <i class="icon-window"></i>
+                        <span>概览</span>
+                    </h2>
+
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="devider-vertical visible-lg"></div>
+                    <div class="tittle-middle-header">
+
+                        <div class="alert">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <span class="tittle-alert entypo-info-circled"></span>
+                            Welcome back,&nbsp;
+                            <strong>Dave mattew!</strong>&nbsp;&nbsp;Your last sig in at Yesterday, 16:54 PM
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="col-lg-2">
+                    <div class="devider-vertical visible-lg"></div>
+                    <div class="btn-group btn-wigdet pull-right visible-lg">
+                        <div class="btn">
+                            Widget
+                        </div>
+                        <button data-toggle="dropdown" class="btn dropdown-toggle" type="button">
+                            <span class="caret"></span>
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul role="menu" class="dropdown-menu">
+                            <li>
+                                <a href="#">
+                                    <span class="entypo-plus-circled margin-iconic"></span>Add New</a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="entypo-heart margin-iconic"></span>Favorite</a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="entypo-cog margin-iconic"></span>Setting</a>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        <!--/ TITLE -->
+
+        <!-- BREADCRUMB -->
+        <ul id="breadcrumb">
+            <li>
+                <span class="entypo-home"></span>
+            </li>
+            <li><i class="fa fa-lg fa-angle-right"></i>
+            </li>
+            <li><a href="/" title="主页">Home</a>
+            </li>
+            <li><i class="fa fa-lg fa-angle-right"></i>
+            </li>
+            <li><a href="javascript:;" title="系统信息" id="breadcrumbNumber">{{.id}}</a>
+            </li>
+            <li class="pull-right">
+                <div class="input-group input-widget">
+                    <input style="border-radius:15px" type="text" placeholder="Search..." class="form-control">
+                </div>
+            </li>
+        </ul>
+
+        <!-- content-->
+        <div class="content-wrap">
+            <div class="row">
+                <div class="col-sm-12">
+                    <!-- BLANK PAGE-->
+
+                    <div class="nest" id="Blank_PageClose">
+                        <div class="title-alt">
+                            <h6>系统信息</h6>
+
+                            <div class="titleClose">
+                                <a class="gone" href="#Blank_PageClose">
+                                    <span class="entypo-cancel"></span>
+                                </a>
+                            </div>
+                            <div class="titleToggle">
+                                <a class="nav-toggle-alt" href="#content">
+                                    <span class="entypo-up-open"></span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="body-nest table-responsive " id="content">
+                            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+                            <div id="main" style="height:400px"></div>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-4"><div id="cpupie" style="height:400px"></div></div>
+                                    <div class="col-md-8" >
+                                        <h3>系统信息</h3>
+                                        <table id="systable" class="table table-bordered tab-content table-halte" style="padding-top: 100px;">
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /END OF CONTENT -->
+        </div>
+    </div>
+</div>
+<!--  END OF PAPER WRAP -->
+
+
+<!-- END OF RIGHT SLIDER CONTENT-->
+{{template "./footer.html" .}}
+
+
+</body>
+
+</html>
+
+<script>
+    $(function () {
+        //获取数据
+        var id = "{{.id}}"
+        loadSysInfo(id);
+    });
+
+    function loadSysInfo(id){
+        $.getJSON("/sys/"+id,null,function(data){
+           // data = JSON.parse(data)
+            if(!data){
+                layer.alert("没有获取到相关数据",{icon: 2,})
+            }else if (data.code != 0){
+                layer.alert(data.message,{icon: 2,})
+                return false;
+            }
+
+            var model = data.data;
+
+            require(['echarts','echarts/chart/bar','echarts/chart/pie'],function(ec){
+                memory(ec,model);
+                cpu(ec,model);
+            });
+
+            //加载表格
+            var table = $("#systable");
+            var str = "<tr> <td>OSarch</td><td>"+model.OSarch+"</td>  </tr>";
+            str +="<tr><td>OSname</td><td>"+model.OSname+"</td></tr>";
+            str +="<tr><td>OSversion</td><td>"+model.OSversion+"</td></tr>";
+            str +="<tr><td>AppStartTime</td><td>"+model.StartTime+"</td></tr>";
+            table.html(str);
+        });
+    }
+
+    function memory(ec,model){
+        // 基于准备好的dom，初始化echarts图表
+        var myChart = ec.init(document.getElementById('main'));
+
+        var option = {
+            title : {
+                text: '内存使用总览',
+                subtext: 'MB单位'
+            },
+            tooltip : {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['物理内存','虚拟内存']
+            },
+            calculable : false,
+            xAxis : [
+                {
+                    type : 'category',
+                    data : ["总量","可用","程序占用"]
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value'
+                }
+            ],
+            series : [
+                {
+                    name:'物理内存',
+                    type:'bar',
+                    data:[model.TotalPhysicalMemory,model.AvailablePhysicalMemory,model.PrivatePhysicalMemory],
+                    markPoint : {
+                        data : [
+                            {type : 'max', name: '最大值'},
+                            {type : 'min', name: '最小值'}
+                        ]
+                    },
+                    markLine : {
+                        data : [
+                            {type : 'average', name: '平均值'}
+                        ]
+                    }
+                },
+                {
+                    name:'虚拟内存',
+                    type:'bar',
+                    data:[model.TotalVirtualMemory,model.AvailableVirtualMemory,0],
+                    markLine : {
+                        data : [
+                            {type : 'average', name : '平均值'}
+                        ]
+                    }
+                }
+            ]
+        };
+
+        // 为echarts对象加载数据
+        myChart.setOption(option);
+    }
+    function cpu(ec,model){
+        var myChart = ec.init(document.getElementById('cpupie'));
+        var option = {
+            title : {
+                text: 'CPU使用率',
+                subtext: 'CPU核心数:'+model.CpuNum,
+                x:'center'
+            },
+            tooltip : {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient : 'vertical',
+                x : 'left',
+                data:['占用','空闲']
+            },
+            calculable : false,
+            series : [
+                {
+                    name:'CPU使用率',
+                    type:'pie',
+                    radius : '55%',
+                    center: ['50%', '60%'],
+                    data:[
+                        {value:model.Cpu, name:'占用'},
+                        {value:100-model.Cpu, name:'空闲'}
+                    ]
+                }
+            ]
+        };
+        // 为echarts对象加载数据
+        myChart.setOption(option);
+    }
+</script>
