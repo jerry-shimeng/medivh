@@ -8,7 +8,7 @@ Medivh监控系统-
 
 3个分系统源代码下载地址：
 
-@3 => https://github.com/larrymshi/medivh.web (https://github.com/larrymshi/medivh.website golangweb 弃用中~)
+@3 => https://github.com/larrymshi/medivh.website 
 
 @2 => https://github.com/larrymshi/medivh.client-csharp
 
